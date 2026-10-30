@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  INVALID SAMPLE: invalid-05-duplicate-id.xml
+  Defect  : Dish D018 re-uses the id D017 (already used by the Falafel Wrap)
+  Expected: XSD error: duplicate key value D017 for xs:key dishKey
+-->
+<!--
+  restaurant-delivery.xml - Valid sample data for the Food Delivery platform.
+  Entities : restaurants (with menus), customers, drivers, orders.
+  Links    : orders reference customers / restaurants / drivers / dishes by id
+             (customerRef, restaurantRef, driverRef, dishRef).
+  Note     : item/@unitPrice is the price at the moment of the order (list price).
+             payment/amount = sum(quantity x unitPrice) + delivery/fee.
+-->
+<foodDelivery version="1.0" generatedOn="2026-10-25"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="../restaurant-delivery.xsd">
+
+  <!-- =================================================================== -->
+  <restaurants>
+
+    <restaurant id="R001" status="open">
+      <name>Bella Napoli Pizzeria</name>
+      <cuisine>Italian</cuisine>
+      <address>
+        <street>12 Rue de la Paix</street>
+        <city>Paris</city>
+        <postalCode>75002</postalCode>
+        <country>France</country>
+      </address>
+      <phone>+33 1 42 00 11 22</phone>
+      <email>contact@bellanapoli.example.com</email>
+      <rating>4.6</rating>
+      <deliveryRadiusKm>6</deliveryRadiusKm>
+      <minimumOrder currency="EUR">12.00</minimumOrder>
+      <openingHours>
+        <day name="Monday"    open="11:00" close="23:00"/>
+        <day name="Tuesday"   open="11:00" close="23:00"/>
+        <day name="Wednesday" open="11:00" close="23:00"/>
+        <day name="Thursday"  open="11:00" close="23:00"/>
+        <day name="Friday"    open="11:00" close="23:30"/>
+        <day name="Saturday"  open="11:00" close="23:30"/>
+        <day name="Sunday"    open="12:00" close="22:00"/>
+      </openingHours>
+      <menu>
+        <category name="Pizzas">
+          <dish id="D001" available="true" vegetarian="true" spicy="false">
+            <name>Pizza Margherita</name>
+            <description>Tomato sauce, fresh mozzarella and basil</description>
+            <price currency="EUR">9.50</price>
+            <promotion discountPercent="20" validUntil="2026-12-31"/>
+            <calories>780</calories>
+            <allergens><allergen>gluten</allergen><allergen>dairy</allergen></allergens>
+          </dish>
+          <dish id="D002" available="true" vegetarian="false" spicy="true">
+            <name>Pizza Diavola</name>
+            <description>Spicy salami, chili oil, mozzarella</description>
+            <price currency="EUR">12.00</price>
+            <calories>920</calories>
+            <allergens><allergen>gluten</allergen><allergen>dairy</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Pasta">
+          <dish id="D003" available="true" vegetarian="false" spicy="false">
+            <name>Spaghetti Carbonara</name>
+            <description>Egg, pecorino, guanciale and black pepper</description>
+            <price currency="EUR">13.50</price>
+            <calories>850</calories>
+            <allergens><allergen>gluten</allergen><allergen>dairy</allergen><allergen>eggs</allergen></allergens>
+          </dish>
+          <dish id="D004" available="true" vegetarian="true" spicy="true">
+            <name>Penne Arrabbiata</name>
+            <description>Tomato, garlic and red chili</description>
+            <price currency="EUR">11.00</price>
+            <calories>640</calories>
+            <allergens><allergen>gluten</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Desserts">
+          <dish id="D005" available="true" vegetarian="true" spicy="false">
+            <name>Tiramisu</name>
+            <description>Mascarpone cream, espresso-soaked biscuits, cocoa</description>
+            <price currency="EUR">6.50</price>
+            <promotion discountPercent="10" validUntil="2026-11-30"/>
+            <calories>450</calories>
+            <allergens><allergen>gluten</allergen><allergen>dairy</allergen><allergen>eggs</allergen></allergens>
+          </dish>
+        </category>
+      </menu>
+    </restaurant>
+
+    <restaurant id="R002" status="open">
+      <name>Sakura Sushi House</name>
+      <cuisine>Japanese</cuisine>
+      <address>
+        <street>8 Avenue Victor Hugo</street>
+        <city>Lyon</city>
+        <postalCode>69002</postalCode>
+        <country>France</country>
+      </address>
+      <phone>+33 4 72 00 33 44</phone>
+      <email>hello@sakurasushi.example.com</email>
+      <rating>4.8</rating>
+      <deliveryRadiusKm>8</deliveryRadiusKm>
+      <minimumOrder currency="EUR">15.00</minimumOrder>
+      <openingHours>
+        <day name="Monday"    open="11:30" close="22:30"/>
+        <day name="Tuesday"   open="11:30" close="22:30"/>
+        <day name="Wednesday" open="11:30" close="22:30"/>
+        <day name="Thursday"  open="11:30" close="22:30"/>
+        <day name="Friday"    open="11:30" close="23:00"/>
+        <day name="Saturday"  open="11:30" close="23:00"/>
+        <day name="Sunday"    open="12:00" close="22:00"/>
+      </openingHours>
+      <menu>
+        <category name="Sushi">
+          <dish id="D006" available="true" vegetarian="false" spicy="false">
+            <name>Salmon Nigiri Set</name>
+            <description>8 pieces of fresh salmon nigiri</description>
+            <price currency="EUR">14.90</price>
+            <calories>420</calories>
+            <allergens><allergen>fish</allergen><allergen>soy</allergen></allergens>
+          </dish>
+          <dish id="D007" available="true" vegetarian="false" spicy="false">
+            <name>California Roll (8 pcs)</name>
+            <description>Crab, avocado, cucumber, sesame</description>
+            <price currency="EUR">10.50</price>
+            <promotion discountPercent="15" validUntil="2026-12-15"/>
+            <calories>380</calories>
+            <allergens><allergen>shellfish</allergen><allergen>sesame</allergen><allergen>soy</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Hot Dishes">
+          <dish id="D008" available="true" vegetarian="true" spicy="false">
+            <name>Vegetable Tempura</name>
+            <description>Crispy seasonal vegetables with tentsuyu sauce</description>
+            <price currency="EUR">8.90</price>
+            <calories>360</calories>
+            <allergens><allergen>gluten</allergen></allergens>
+          </dish>
+          <dish id="D009" available="true" vegetarian="false" spicy="false">
+            <name>Chicken Ramen</name>
+            <description>Rich chicken broth, noodles, soft egg, nori</description>
+            <price currency="EUR">13.00</price>
+            <calories>690</calories>
+            <allergens><allergen>gluten</allergen><allergen>soy</allergen><allergen>eggs</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Drinks and Sweets">
+          <dish id="D010" available="true" vegetarian="true" spicy="false">
+            <name>Iced Green Tea</name>
+            <price currency="EUR">3.50</price>
+            <calories>5</calories>
+          </dish>
+          <dish id="D022" available="false" vegetarian="true">
+            <name>Matcha Mochi</name>
+            <description>Seasonal item - currently out of stock</description>
+            <price currency="EUR">5.50</price>
+            <calories>210</calories>
+            <allergens><allergen>soy</allergen></allergens>
+          </dish>
+        </category>
+      </menu>
+    </restaurant>
+
+    <restaurant id="R003" status="open">
+      <name>Burger Republic</name>
+      <cuisine>American</cuisine>
+      <address>
+        <street>25 Boulevard Haussmann</street>
+        <city>Paris</city>
+        <postalCode>75009</postalCode>
+        <country>France</country>
+      </address>
+      <phone>+33 1 40 00 55 66</phone>
+      <rating>4.2</rating>
+      <deliveryRadiusKm>5</deliveryRadiusKm>
+      <minimumOrder currency="EUR">10.00</minimumOrder>
+      <openingHours>
+        <day name="Monday"    open="11:00" close="23:00"/>
+        <day name="Tuesday"   open="11:00" close="23:00"/>
+        <day name="Wednesday" open="11:00" close="23:00"/>
+        <day name="Thursday"  open="11:00" close="23:00"/>
+        <day name="Friday"    open="11:00" close="00:00"/>
+        <day name="Saturday"  open="11:00" close="00:00"/>
+      </openingHours>
+      <menu>
+        <category name="Burgers">
+          <dish id="D011" available="true" vegetarian="false" spicy="false">
+            <name>Classic Cheeseburger</name>
+            <description>Beef patty, cheddar, pickles, house sauce</description>
+            <price currency="EUR">11.50</price>
+            <calories>870</calories>
+            <allergens><allergen>gluten</allergen><allergen>dairy</allergen><allergen>sesame</allergen></allergens>
+          </dish>
+          <dish id="D012" available="true" vegetarian="false" spicy="true">
+            <name>Spicy Chicken Burger</name>
+            <description>Crispy chicken, jalapenos, spicy mayo</description>
+            <price currency="EUR">12.50</price>
+            <promotion discountPercent="25" validUntil="2026-11-15"/>
+            <calories>810</calories>
+            <allergens><allergen>gluten</allergen><allergen>eggs</allergen></allergens>
+          </dish>
+          <dish id="D013" available="true" vegetarian="true" spicy="false">
+            <name>Veggie Garden Burger</name>
+            <description>Plant-based patty, avocado, tomato</description>
+            <price currency="EUR">12.00</price>
+            <calories>640</calories>
+            <allergens><allergen>gluten</allergen><allergen>soy</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Sides and Drinks">
+          <dish id="D014" available="true" vegetarian="true" spicy="false">
+            <name>Sweet Potato Fries</name>
+            <price currency="EUR">5.00</price>
+            <calories>420</calories>
+          </dish>
+          <dish id="D015" available="true" vegetarian="true" spicy="false">
+            <name>Chocolate Milkshake</name>
+            <price currency="EUR">5.50</price>
+            <calories>520</calories>
+            <allergens><allergen>dairy</allergen></allergens>
+          </dish>
+        </category>
+      </menu>
+    </restaurant>
+
+    <restaurant id="R004" status="closed">
+      <name>Green Garden Vegan Kitchen</name>
+      <cuisine>Vegan</cuisine>
+      <address>
+        <street>3 Place Bellecour</street>
+        <city>Lyon</city>
+        <postalCode>69002</postalCode>
+        <country>France</country>
+      </address>
+      <phone>+33 4 78 00 77 88</phone>
+      <email>team@greengarden.example.com</email>
+      <rating>4.4</rating>
+      <deliveryRadiusKm>4.5</deliveryRadiusKm>
+      <minimumOrder currency="EUR">12.00</minimumOrder>
+      <openingHours>
+        <day name="Monday"    open="10:00" close="20:00"/>
+        <day name="Tuesday"   open="10:00" close="20:00"/>
+        <day name="Wednesday" open="10:00" close="20:00"/>
+        <day name="Thursday"  open="10:00" close="20:00"/>
+        <day name="Friday"    open="10:00" close="20:00"/>
+      </openingHours>
+      <menu>
+        <category name="Bowls and Wraps">
+          <dish id="D016" available="true" vegetarian="true" spicy="false">
+            <name>Buddha Bowl</name>
+            <description>Quinoa, roasted chickpeas, avocado, tahini</description>
+            <price currency="EUR">12.50</price>
+            <calories>590</calories>
+            <allergens><allergen>nuts</allergen><allergen>sesame</allergen></allergens>
+          </dish>
+          <dish id="D017" available="true" vegetarian="true" spicy="true">
+            <name>Falafel Wrap</name>
+            <description>Falafel, pickled cabbage, harissa</description>
+            <price currency="EUR">9.00</price>
+            <calories>540</calories>
+            <allergens><allergen>gluten</allergen><allergen>sesame</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Smoothies">
+          <dish id="D017" available="true" vegetarian="true" spicy="false">
+            <name>Green Detox Smoothie</name>
+            <price currency="EUR">6.00</price>
+            <promotion discountPercent="10" validUntil="2026-12-31"/>
+            <calories>180</calories>
+          </dish>
+        </category>
+      </menu>
+    </restaurant>
+
+    <restaurant id="R005" status="open">
+      <name>Beirut Nights</name>
+      <cuisine>Lebanese</cuisine>
+      <address>
+        <street>17 Rue Saint-Ferreol</street>
+        <city>Marseille</city>
+        <postalCode>13001</postalCode>
+        <country>France</country>
+      </address>
+      <phone>+33 4 91 00 99 00</phone>
+      <rating>4.7</rating>
+      <deliveryRadiusKm>7</deliveryRadiusKm>
+      <minimumOrder currency="EUR">14.00</minimumOrder>
+      <openingHours>
+        <day name="Monday"    open="11:00" close="23:00"/>
+        <day name="Tuesday"   open="11:00" close="23:00"/>
+        <day name="Wednesday" open="11:00" close="23:00"/>
+        <day name="Thursday"  open="11:00" close="23:00"/>
+        <day name="Friday"    open="11:00" close="23:59"/>
+        <day name="Saturday"  open="11:00" close="23:59"/>
+        <day name="Sunday"    open="11:00" close="22:00"/>
+      </openingHours>
+      <menu>
+        <category name="Mezze">
+          <dish id="D020" available="true" vegetarian="true" spicy="false">
+            <name>Hummus and Pita</name>
+            <description>Creamy chickpea hummus with warm pita bread</description>
+            <price currency="EUR">6.50</price>
+            <calories>410</calories>
+            <allergens><allergen>gluten</allergen><allergen>sesame</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Grill">
+          <dish id="D019" available="true" vegetarian="false" spicy="false">
+            <name>Chicken Shawarma Plate</name>
+            <description>Marinated chicken, garlic sauce, pickles, rice</description>
+            <price currency="EUR">13.50</price>
+            <calories>760</calories>
+            <allergens><allergen>sesame</allergen></allergens>
+          </dish>
+        </category>
+        <category name="Sweets">
+          <dish id="D021" available="true" vegetarian="true" spicy="false">
+            <name>Baklava</name>
+            <description>Layers of filo, pistachio and honey syrup</description>
+            <price currency="EUR">5.00</price>
+            <calories>330</calories>
+            <allergens><allergen>gluten</allergen><allergen>nuts</allergen></allergens>
+          </dish>
+        </category>
+      </menu>
+    </restaurant>
+
+  </restaurants>
+
+  <!-- =================================================================== -->
+  <customers>
+
+    <customer id="C001" active="true">
+      <firstName>Sarah</firstName>
+      <lastName>Johnson</lastName>
+      <email>sarah.johnson@example.com</email>
+      <phone>+33 6 12 34 56 78</phone>
+      <address label="home">
+        <street>14 Rue Oberkampf</street>
+        <city>Paris</city>
+        <postalCode>75011</postalCode>
+        <country>France</country>
+      </address>
+      <loyaltyPoints>320</loyaltyPoints>
+      <registeredOn>2025-03-14</registeredOn>
+    </customer>
+
+    <customer id="C002" active="true">
+      <firstName>Mohamed</firstName>
+      <lastName>Ali</lastName>
+      <email>mohamed.ali@example.com</email>
+      <phone>+33 6 98 76 54 32</phone>
+      <address label="home">
+        <street>5 Rue de la Republique</street>
+        <city>Lyon</city>
+        <postalCode>69002</postalCode>
+        <country>France</country>
+      </address>
+      <loyaltyPoints>150</loyaltyPoints>
+      <registeredOn>2025-06-02</registeredOn>
+    </customer>
+
+    <customer id="C003" active="true">
+      <firstName>Emma</firstName>
+      <lastName>Dubois</lastName>
+      <email>emma.dubois@example.com</email>
+      <phone>+33 6 11 22 33 44</phone>
+      <address label="work">
+        <street>27 Avenue Montaigne</street>
+        <city>Paris</city>
+        <postalCode>75008</postalCode>
+        <country>France</country>
+      </address>
+      <address label="home">
+        <street>9 Rue des Martyrs</street>
+        <city>Paris</city>
+        <postalCode>75009</postalCode>
+        <country>France</country>
+      </address>
+      <loyaltyPoints>90</loyaltyPoints>
+      <registeredOn>2025-09-21</registeredOn>
+    </customer>
+
+    <customer id="C004" active="false">
+      <firstName>Lucas</firstName>
+      <lastName>Martin</lastName>
+      <email>lucas.martin@example.com</email>
+      <phone>+33 6 55 44 33 22</phone>
+      <address label="home">
+        <street>2 Quai du Port</street>
+        <city>Marseille</city>
+        <postalCode>13002</postalCode>
+        <country>France</country>
+      </address>
+      <loyaltyPoints>0</loyaltyPoints>
+      <registeredOn>2024-11-30</registeredOn>
+    </customer>
+
+    <customer id="C005" active="true">
+      <firstName>Yasmine</firstName>
+      <lastName>Haddad</lastName>
+      <email>yasmine.haddad@example.com</email>
+      <phone>+33 7 66 77 88 99</phone>
+      <address label="home">
+        <street>31 Cours Lafayette</street>
+        <city>Lyon</city>
+        <postalCode>69003</postalCode>
+        <country>France</country>
+      </address>
+      <loyaltyPoints>510</loyaltyPoints>
+      <registeredOn>2024-05-18</registeredOn>
+    </customer>
+
+  </customers>
+
+  <!-- =================================================================== -->
+  <drivers>
+    <driver id="DR001" status="busy">
+      <name>Karim Benali</name>
+      <phone>+33 6 01 02 03 04</phone>
+      <vehicle kind="scooter"><plate>AB-123-CD</plate></vehicle>
+      <rating>4.9</rating>
+    </driver>
+    <driver id="DR002" status="available">
+      <name>Julie Moreau</name>
+      <phone>+33 6 05 06 07 08</phone>
+      <vehicle kind="bicycle"><plate>VELO-0042</plate></vehicle>
+      <rating>4.7</rating>
+    </driver>
+    <driver id="DR003" status="available">
+      <name>Paul Girard</name>
+      <phone>+33 6 09 10 11 12</phone>
+      <vehicle kind="motorbike"><plate>EF-456-GH</plate></vehicle>
+      <rating>4.5</rating>
+    </driver>
+    <driver id="DR004" status="offline">
+      <name>Nina Rossi</name>
+      <phone>+33 6 13 14 15 16</phone>
+      <vehicle kind="car"><plate>IJ-789-KL</plate></vehicle>
+      <rating>4.6</rating>
+    </driver>
+  </drivers>
+
+  <!-- =================================================================== -->
+  <orders>
+
+    <order id="O1001" customerRef="C001" restaurantRef="R001" driverRef="DR001" status="delivered">
+      <orderDate>2026-10-20T19:05:00</orderDate>
+      <items>
+        <item dishRef="D001" quantity="2" unitPrice="9.50"/>
+        <item dishRef="D003" quantity="1" unitPrice="13.50"/>
+        <item dishRef="D005" quantity="1" unitPrice="6.50"><note>Extra cocoa please</note></item>
+      </items>
+      <delivery>
+        <address label="home"><street>14 Rue Oberkampf</street><city>Paris</city><postalCode>75011</postalCode></address>
+        <fee currency="EUR">2.50</fee>
+        <estimatedMinutes>35</estimatedMinutes>
+        <deliveredAt>2026-10-20T19:38:00</deliveredAt>
+      </delivery>
+      <payment method="card" status="paid"><amount currency="EUR">41.50</amount></payment>
+      <review stars="5"><comment>Hot, fast and delicious!</comment></review>
+    </order>
+
+    <order id="O1002" customerRef="C002" restaurantRef="R002" driverRef="DR003" status="delivered">
+      <orderDate>2026-10-21T12:40:00</orderDate>
+      <items>
+        <item dishRef="D006" quantity="1" unitPrice="14.90"/>
+        <item dishRef="D007" quantity="2" unitPrice="10.50"/>
+        <item dishRef="D010" quantity="2" unitPrice="3.50"/>
+      </items>
+      <delivery>
+        <address label="home"><street>5 Rue de la Republique</street><city>Lyon</city><postalCode>69002</postalCode></address>
+        <fee currency="EUR">3.00</fee>
+        <estimatedMinutes>40</estimatedMinutes>
+        <deliveredAt>2026-10-21T13:22:00</deliveredAt>
+      </delivery>
+      <payment method="paypal" status="paid"><amount currency="EUR">45.90</amount></payment>
+      <review stars="4"><comment>Very fresh sushi, slightly late.</comment></review>
+    </order>
+
+    <order id="O1003" customerRef="C003" restaurantRef="R003" driverRef="DR002" status="delivered">
+      <orderDate>2026-10-22T20:15:00</orderDate>
+      <items>
+        <item dishRef="D011" quantity="2" unitPrice="11.50"/>
+        <item dishRef="D014" quantity="2" unitPrice="5.00"/>
+        <item dishRef="D015" quantity="2" unitPrice="5.50"/>
+      </items>
+      <delivery>
+        <address label="work"><street>27 Avenue Montaigne</street><city>Paris</city><postalCode>75008</postalCode></address>
+        <fee currency="EUR">2.00</fee>
+        <estimatedMinutes>30</estimatedMinutes>
+        <deliveredAt>2026-10-22T20:52:00</deliveredAt>
+      </delivery>
+      <payment method="cash" status="paid"><amount currency="EUR">46.00</amount></payment>
+      <review stars="3"><comment>Fries were cold.</comment></review>
+    </order>
+
+    <order id="O1004" customerRef="C001" restaurantRef="R005" driverRef="DR001" status="on_the_way">
+      <orderDate>2026-10-25T18:30:00</orderDate>
+      <items>
+        <item dishRef="D019" quantity="2" unitPrice="13.50"/>
+        <item dishRef="D020" quantity="1" unitPrice="6.50"/>
+        <item dishRef="D021" quantity="1" unitPrice="5.00"/>
+      </items>
+      <delivery>
+        <address label="home"><street>14 Rue Oberkampf</street><city>Paris</city><postalCode>75011</postalCode></address>
+        <fee currency="EUR">3.50</fee>
+        <estimatedMinutes>45</estimatedMinutes>
+      </delivery>
+      <payment method="card" status="paid"><amount currency="EUR">42.00</amount></payment>
+    </order>
+
+    <order id="O1005" customerRef="C005" restaurantRef="R004" status="cancelled">
+      <orderDate>2026-10-24T21:10:00</orderDate>
+      <items>
+        <item dishRef="D016" quantity="1" unitPrice="12.50"/>
+        <item dishRef="D018" quantity="2" unitPrice="6.00"/>
+      </items>
+      <delivery>
+        <address label="home"><street>31 Cours Lafayette</street><city>Lyon</city><postalCode>69003</postalCode></address>
+        <fee currency="EUR">2.50</fee>
+        <estimatedMinutes>30</estimatedMinutes>
+      </delivery>
+      <payment method="card" status="refunded"><amount currency="EUR">27.00</amount></payment>
+    </order>
+
+    <order id="O1006" customerRef="C002" restaurantRef="R001" status="pending">
+      <orderDate>2026-10-25T19:20:00</orderDate>
+      <items>
+        <item dishRef="D002" quantity="1" unitPrice="12.00"/>
+        <item dishRef="D004" quantity="1" unitPrice="11.00"/>
+      </items>
+      <delivery>
+        <address label="home"><street>5 Rue de la Republique</street><city>Lyon</city><postalCode>69002</postalCode></address>
+        <fee currency="EUR">2.50</fee>
+        <estimatedMinutes>40</estimatedMinutes>
+      </delivery>
+      <payment method="cash" status="pending"><amount currency="EUR">25.50</amount></payment>
+    </order>
+
+    <order id="O1007" customerRef="C005" restaurantRef="R002" status="confirmed">
+      <orderDate>2026-10-25T19:35:00</orderDate>
+      <items>
+        <item dishRef="D009" quantity="2" unitPrice="13.00"/>
+        <item dishRef="D008" quantity="1" unitPrice="8.90"/>
+      </items>
+      <delivery>
+        <address label="home"><street>31 Cours Lafayette</street><city>Lyon</city><postalCode>69003</postalCode></address>
+        <fee currency="EUR">3.00</fee>
+        <estimatedMinutes>45</estimatedMinutes>
+      </delivery>
+      <payment method="card" status="paid"><amount currency="EUR">37.90</amount></payment>
+    </order>
+
+    <order id="O1008" customerRef="C003" restaurantRef="R005" driverRef="DR002" status="delivered">
+      <orderDate>2026-10-23T13:00:00</orderDate>
+      <items>
+        <item dishRef="D019" quantity="1" unitPrice="13.50"/>
+        <item dishRef="D020" quantity="2" unitPrice="6.50"/>
+      </items>
+      <delivery>
+        <address label="work"><street>27 Avenue Montaigne</street><city>Paris</city><postalCode>75008</postalCode></address>
+        <fee currency="EUR">3.50</fee>
+        <estimatedMinutes>50</estimatedMinutes>
+        <deliveredAt>2026-10-23T13:41:00</deliveredAt>
+      </delivery>
+      <payment method="wallet" status="paid"><amount currency="EUR">30.00</amount></payment>
+      <review stars="5"><comment>Best shawarma in town.</comment></review>
+    </order>
+
+    <order id="O1009" customerRef="C001" restaurantRef="R003" driverRef="DR003" status="delivered">
+      <orderDate>2026-10-18T12:10:00</orderDate>
+      <items>
+        <item dishRef="D012" quantity="1" unitPrice="12.50"/>
+        <item dishRef="D014" quantity="1" unitPrice="5.00"/>
+      </items>
+      <delivery>
+        <address label="home"><street>14 Rue Oberkampf</street><city>Paris</city><postalCode>75011</postalCode></address>
+        <fee currency="EUR">2.00</fee>
+        <estimatedMinutes>25</estimatedMinutes>
+        <deliveredAt>2026-10-18T12:33:00</deliveredAt>
+      </delivery>
+      <payment method="card" status="paid"><amount currency="EUR">19.50</amount></payment>
+      <review stars="4"><comment>Nice and spicy.</comment></review>
+    </order>
+
+    <order id="O1010" customerRef="C005" restaurantRef="R001" driverRef="DR002" status="delivered">
+      <orderDate>2026-10-19T20:00:00</orderDate>
+      <items>
+        <item dishRef="D001" quantity="1" unitPrice="9.50"/>
+        <item dishRef="D004" quantity="1" unitPrice="11.00"/>
+        <item dishRef="D005" quantity="2" unitPrice="6.50"/>
+      </items>
+      <delivery>
+        <address label="home"><street>31 Cours Lafayette</street><city>Lyon</city><postalCode>69003</postalCode></address>
+        <fee currency="EUR">2.50</fee>
+        <estimatedMinutes>35</estimatedMinutes>
+        <deliveredAt>2026-10-19T20:31:00</deliveredAt>
+      </delivery>
+      <payment method="paypal" status="paid"><amount currency="EUR">36.00</amount></payment>
+      <review stars="5"><comment>Perfect pizza night.</comment></review>
+    </order>
+
+  </orders>
+</foodDelivery>

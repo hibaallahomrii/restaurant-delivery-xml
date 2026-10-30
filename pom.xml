@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  pom.xml - Maven configuration of the project (TP1 - SOA & Web Services).
+
+  IMPORTANT - about "dependencies":
+  XML validation (SchemaFactory / Validator) and XPath (XPathFactory / XPathExpression)
+  belong to JAXP = package javax.xml.*, which is ALREADY INSIDE the JDK.
+  So the application itself needs NO external library.
+  The only dependency is JUnit 5, used by the automatic tests (scope "test").
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Project identity -->
+  <groupId>com.fss.soa</groupId>
+  <artifactId>restaurant-delivery-xml</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+  <name>TP1 SOA - Restaurant Delivery : XML, XSD and XPath</name>
+  <description>XML modelling, XSD validation and XPath querying with JAXP (Maven project)</description>
+
+  <properties>
+    <!-- Java 8 as required by the TP ("JDK 1.8 or higher"); works on any newer JDK -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit.version>5.10.2</junit.version>
+    <main.class>com.fss.soa.tp1.Main</main.class>
+  </properties>
+
+  <dependencies>
+    <!-- Unit tests (aggregate artifact: API + engine + parameterized tests) -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>restaurant-delivery-xml</finalName>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+      </plugin>
+
+      <!-- Runs the JUnit 5 tests during "mvn test" / "mvn package" -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
+
+      <!-- Builds an executable jar:  java -jar target/restaurant-delivery-xml.jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${main.class}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Lets us run the program with:  mvn compile exec:java -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <mainClass>${main.class}</mainClass>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

@@ -1,0 +1,248 @@
+
+==============================================================================
+  FEATURE 2 - XPATH QUERIES
+==============================================================================
+
+>> 1. Basic selection
+---------------------
+
+Q01  All restaurant names (TP example: 'all film titles')
+      XPath : //restaurants/restaurant/name
+      Result: [5] Bella Napoli Pizzeria, Sakura Sushi House, Burger Republic, Green Garden Vegan Kitchen, Beirut Nights
+
+Q02  All dish names, in every menu
+      XPath : //dish/name
+      Result: [22] Pizza Margherita, Pizza Diavola, Spaghetti Carbonara, Penne Arrabbiata, Tiramisu, Salmon Nigiri Set, California Roll (8 pcs), Vegetable Tempura, Chicken Ramen, Iced Green Tea, Matcha Mochi, Classic Cheeseburger, Spicy Chicken Burger, Veggie Garden Burger, Sweet Potato Fries, Chocolate Milkshake, Buddha Bowl, Falafel Wrap, Green Detox Smoothie, Hummus and Pita, Chicken Shawarma Plate, Baklava
+
+Q03  How many dishes are there?
+      XPath : count(//dish)
+      Result: 22
+
+Q04  Distinct cities (XPath 1.0 trick for distinct-values)
+      XPath : //restaurant[not(address/city = preceding-sibling::restaurant/address/city)]/address/city
+      Result: [3] Paris, Lyon, Marseille
+
+>> 2. Attributes and predicates
+-------------------------------
+
+Q05  Restaurants that are currently open
+      XPath : //restaurant[@status='open']/name
+      Result: [4] Bella Napoli Pizzeria, Sakura Sushi House, Burger Republic, Beirut Nights
+
+Q06  Restaurants that are NOT open
+      XPath : //restaurant[@status!='open']/name
+      Result: [1] Green Garden Vegan Kitchen
+
+Q07  Dishes in promotion (TP example: 'products on sale')
+      XPath : //dish[promotion]/name
+      Result: [5] Pizza Margherita, Tiramisu, California Roll (8 pcs), Spicy Chicken Burger, Green Detox Smoothie
+
+Q08  Dishes with a discount of 15% or more
+      XPath : //dish[promotion/@discountPercent >= 15]/name
+      Result: [3] Pizza Margherita, California Roll (8 pcs), Spicy Chicken Burger
+
+Q09  Vegetarian dishes that can be ordered now
+      XPath : //dish[@vegetarian='true' and @available='true']/name
+      Result: [13] Pizza Margherita, Penne Arrabbiata, Tiramisu, Vegetable Tempura, Iced Green Tea, Veggie Garden Burger, Sweet Potato Fries, Chocolate Milkshake, Buddha Bowl, Falafel Wrap, Green Detox Smoothie, Hummus and Pita, Baklava
+
+Q10  Spicy dishes
+      XPath : //dish[@spicy='true']/name
+      Result: [4] Pizza Diavola, Penne Arrabbiata, Spicy Chicken Burger, Falafel Wrap
+
+Q11  Dishes that are out of stock
+      XPath : //dish[@available='false']/name
+      Result: [1] Matcha Mochi
+
+Q12  E-mails of ACTIVE customers (TP example: 'active users')
+      XPath : //customer[@active='true']/email
+      Result: [4] sarah.johnson@example.com, mohamed.ali@example.com, emma.dubois@example.com, yasmine.haddad@example.com
+
+Q13  Last names of INACTIVE customers
+      XPath : //customer[@active='false']/lastName
+      Result: [1] Martin
+
+Q14  Customers having at least 200 loyalty points
+      XPath : //customer[loyaltyPoints >= 200]/lastName
+      Result: [2] Johnson, Haddad
+
+Q15  Available delivery drivers
+      XPath : //driver[@status='available']/name
+      Result: [2] Julie Moreau, Paul Girard
+
+>> 3. Numeric comparisons
+-------------------------
+
+Q16  Dishes more expensive than 12 EUR
+      XPath : //dish[price > 12]/name
+      Result: [6] Spaghetti Carbonara, Salmon Nigiri Set, Chicken Ramen, Spicy Chicken Burger, Buddha Bowl, Chicken Shawarma Plate
+
+Q17  Dishes priced between 5 and 10 EUR (inclusive)
+      XPath : //dish[price >= 5 and price <= 10]/name
+      Result: [10] Pizza Margherita, Tiramisu, Vegetable Tempura, Matcha Mochi, Sweet Potato Fries, Chocolate Milkshake, Falafel Wrap, Green Detox Smoothie, Hummus and Pita, Baklava
+
+Q18  The cheapest dish (no dish is cheaper)
+      XPath : //dish[not(price > //dish/price)]/name
+      Result: [1] Iced Green Tea
+
+Q19  The most expensive dish (no dish is dearer)
+      XPath : //dish[not(price < //dish/price)]/name
+      Result: [1] Salmon Nigiri Set
+
+Q20  Restaurants rated 4.5 or more
+      XPath : //restaurant[rating >= 4.5]/name
+      Result: [3] Bella Napoli Pizzeria, Sakura Sushi House, Beirut Nights
+
+>> 4. Text functions
+--------------------
+
+Q21  Dishes whose name contains 'Pizza'
+      XPath : //dish[contains(name,'Pizza')]/name
+      Result: [2] Pizza Margherita, Pizza Diavola
+
+Q22  Restaurants whose name starts with 'B'
+      XPath : //restaurant[starts-with(name,'B')]/name
+      Result: [3] Bella Napoli Pizzeria, Burger Republic, Beirut Nights
+
+Q23  Case-insensitive search of 'burger' (translate trick)
+      XPath : //dish[contains(translate(name,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'burger')]/name
+      Result: [3] Classic Cheeseburger, Spicy Chicken Burger, Veggie Garden Burger
+
+Q24  Restaurants located in Lyon
+      XPath : //restaurant[address/city='Lyon']/name
+      Result: [2] Sakura Sushi House, Green Garden Vegan Kitchen
+
+>> 5. Allergens and diet
+------------------------
+
+Q25  Dishes containing gluten
+      XPath : //dish[allergens/allergen='gluten']/name
+      Result: [13] Pizza Margherita, Pizza Diavola, Spaghetti Carbonara, Penne Arrabbiata, Tiramisu, Vegetable Tempura, Chicken Ramen, Classic Cheeseburger, Spicy Chicken Burger, Veggie Garden Burger, Falafel Wrap, Hummus and Pita, Baklava
+
+Q26  Dishes declaring NO allergen at all
+      XPath : //dish[not(allergens/allergen)]/name
+      Result: [3] Iced Green Tea, Sweet Potato Fries, Green Detox Smoothie
+
+Q27  Vegetarian dishes WITHOUT gluten
+      XPath : //dish[@vegetarian='true' and not(allergens/allergen='gluten')]/name
+      Result: [6] Iced Green Tea, Matcha Mochi, Sweet Potato Fries, Chocolate Milkshake, Buddha Bowl, Green Detox Smoothie
+
+>> 6. Aggregates (count / sum)
+------------------------------
+
+Q28  Total number of orders
+      XPath : count(//order)
+      Result: 10
+
+Q29  Revenue of delivered orders (EUR)
+      XPath : sum(//order[@status='delivered']/payment/amount)
+      Result: 218.90
+
+Q30  Average dish price (EUR)
+      XPath : sum(//dish/price) div count(//dish)
+      Result: 9.45
+
+Q31  Total delivery fees (EUR)
+      XPath : sum(//order/delivery/fee)
+      Result: 27
+
+Q32  Average restaurant rating
+      XPath : sum(//restaurant/rating) div count(//restaurant)
+      Result: 4.54
+
+Q33  Is there at least one pending order? (boolean)
+      XPath : boolean(//order[@status='pending'])
+      Result: true
+
+>> 7. Orders and cross-references (joins by id)
+-----------------------------------------------
+
+Q34  Ids of delivered orders
+      XPath : //order[@status='delivered']/@id
+      Result: [6] O1001, O1002, O1003, O1008, O1009, O1010
+
+Q35  Orders placed by customer C001
+      XPath : //order[@customerRef='C001']/@id
+      Result: [3] O1001, O1004, O1009
+
+Q36  Name of the restaurant of order O1001 (join order -> restaurant)
+      XPath : //restaurant[@id = //order[@id='O1001']/@restaurantRef]/name
+      Result: [1] Bella Napoli Pizzeria
+
+Q37  Names of the dishes ordered in O1001 (join item -> dish)
+      XPath : //dish[@id = //order[@id='O1001']/items/item/@dishRef]/name
+      Result: [3] Pizza Margherita, Spaghetti Carbonara, Tiramisu
+
+Q38  Last names of customers who left a 5-star review
+      XPath : //customer[@id = //order[review/@stars=5]/@customerRef]/lastName
+      Result: [3] Johnson, Dubois, Haddad
+
+Q39  Orders with at least one item ordered in quantity 2 or more
+      XPath : //order[items/item/@quantity >= 2]/@id
+      Result: [8] O1001, O1002, O1003, O1004, O1005, O1007, O1008, O1010
+
+Q40  Orders without an assigned driver
+      XPath : //order[not(@driverRef)]/@id
+      Result: [3] O1005, O1006, O1007
+
+Q41  Orders whose total is above 40 EUR
+      XPath : //order[payment/amount > 40]/@id
+      Result: [4] O1001, O1002, O1003, O1004
+
+Q42  Dishes that were NEVER ordered
+      XPath : //dish[not(@id = //item/@dishRef)]/name
+      Result: [3] Matcha Mochi, Veggie Garden Burger, Falafel Wrap
+
+Q43  Names of drivers who delivered at least one order
+      XPath : //driver[@id = //order[@status='delivered']/@driverRef]/name
+      Result: [3] Karim Benali, Julie Moreau, Paul Girard
+
+>> 8. Axes, position and union
+------------------------------
+
+Q44  Restaurant that owns dish D007 (ancestor axis)
+      XPath : //dish[@id='D007']/ancestor::restaurant/name
+      Result: [1] Sakura Sushi House
+
+Q45  Dish that follows D001 in the menu (following-sibling axis)
+      XPath : //dish[@id='D001']/following-sibling::dish[1]/name
+      Result: [1] Pizza Diavola
+
+Q46  First dish of every category
+      XPath : //category/dish[1]/name
+      Result: [13] Pizza Margherita, Spaghetti Carbonara, Tiramisu, Salmon Nigiri Set, Vegetable Tempura, Iced Green Tea, Classic Cheeseburger, Sweet Potato Fries, Buddha Bowl, Green Detox Smoothie, Hummus and Pita, Chicken Shawarma Plate, Baklava
+
+Q47  Last dish of the whole document
+      XPath : (//dish)[last()]/name
+      Result: [1] Baklava
+
+Q48  Menu categories of restaurant R002
+      XPath : //restaurant[@id='R002']/menu/category/@name
+      Result: [3] Sushi, Hot Dishes, Drinks and Sweets
+
+Q49  Opening time of R001 on Monday
+      XPath : //restaurant[@id='R001']/openingHours/day[@name='Monday']/@open
+      Result: [1] 11:00
+
+Q50  Restaurants closed on Sunday (no <day name='Sunday'>)
+      XPath : //restaurant[not(openingHours/day[@name='Sunday'])]/name
+      Result: [2] Burger Republic, Green Garden Vegan Kitchen
+
+Q51  Union (|): spicy dishes OR dishes in promotion
+      XPath : //dish[@spicy='true']/name | //dish[promotion]/name
+      Result: [8] Pizza Margherita, Pizza Diavola, Penne Arrabbiata, Tiramisu, California Roll (8 pcs), Spicy Chicken Burger, Falafel Wrap, Green Detox Smoothie
+
+>> 9. Order report (several XPath queries combined)
+---------------------------------------------------
+
+Order  Customer           Restaurant                 Status        Driver               Total Stars 
+----------------------------------------------------------------------------------------------------
+O1001  Sarah Johnson      Bella Napoli Pizzeria      delivered     Karim Benali     41.50 EUR 5     
+O1002  Mohamed Ali        Sakura Sushi House         delivered     Paul Girard      45.90 EUR 4     
+O1003  Emma Dubois        Burger Republic            delivered     Julie Moreau     46.00 EUR 3     
+O1004  Sarah Johnson      Beirut Nights              on_the_way    Karim Benali     42.00 EUR -     
+O1005  Yasmine Haddad     Green Garden Vegan Kitchen cancelled     -                27.00 EUR -     
+O1006  Mohamed Ali        Bella Napoli Pizzeria      pending       -                25.50 EUR -     
+O1007  Yasmine Haddad     Sakura Sushi House         confirmed     -                37.90 EUR -     
+O1008  Emma Dubois        Beirut Nights              delivered     Julie Moreau     30.00 EUR 5     
+O1009  Sarah Johnson      Burger Republic            delivered     Paul Girard      19.50 EUR 4     
+O1010  Yasmine Haddad     Bella Napoli Pizzeria      delivered     Julie Moreau     36.00 EUR 5     

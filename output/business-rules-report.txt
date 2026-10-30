@@ -1,0 +1,12 @@
+
+==============================================================================
+  BONUS - BUSINESS RULES (what an XSD cannot check)
+==============================================================================
+R1 dish belongs to the order's restaurant
+R2 unit price equals the menu price
+R3 payment = items + delivery fee
+R4 delivered order has a driver and a delivery date
+R5 cancelled order has no driver and is not 'paid'
+
+67 checks executed.
+[OK]   no business rule violation.

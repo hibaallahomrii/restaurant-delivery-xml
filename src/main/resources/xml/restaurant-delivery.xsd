@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ==========================================================================
+  restaurant-delivery.xsd  -  XML Schema (XSD 1.0) for the "Food Delivery" domain
+  TP1 - SOA & Web Services - FSS (LSI3)
+  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  The schema is organised in 4 parts:
+    PART 1 - Simple types   : restrictions (enumerations, patterns, ranges)
+    PART 2 - Complex types  : reusable building blocks (address, dish, ...)
+    PART 3 - Root element   : structure of the whole document
+    PART 4 - Identity rules : xs:key / xs:keyref  (= primary & foreign keys)
+  ==========================================================================
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- ====================================================================
+       PART 1 - SIMPLE TYPES
+       ==================================================================== -->
+
+  <!-- Identifiers: one prefix per entity so that an id is self-explanatory -->
+  <xs:simpleType name="RestaurantIdType">
+    <xs:restriction base="xs:string"><xs:pattern value="R\d{3}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DishIdType">
+    <xs:restriction base="xs:string"><xs:pattern value="D\d{3}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CustomerIdType">
+    <xs:restriction base="xs:string"><xs:pattern value="C\d{3}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DriverIdType">
+    <xs:restriction base="xs:string"><xs:pattern value="DR\d{3}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OrderIdType">
+    <xs:restriction base="xs:string"><xs:pattern value="O\d{4}"/></xs:restriction>
+  </xs:simpleType>
+
+  <!-- Text formats -->
+  <xs:simpleType name="NameType">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="2"/>
+      <xs:maxLength value="80"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="EmailType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PhoneType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="\+?[0-9 ]{8,20}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PostalCodeType">
+    <xs:restriction base="xs:string"><xs:pattern value="[0-9]{4,5}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PlateType">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Z0-9\- ]{4,12}"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TimeOfDayType"> <!-- HH:MM, 24h clock -->
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([01][0-9]|2[0-3]):[0-5][0-9]"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Numbers -->
+  <xs:simpleType name="PositiveAmountType"> <!-- strictly > 0, 2 decimals -->
+    <xs:restriction base="xs:decimal">
+      <xs:minExclusive value="0"/>
+      <xs:totalDigits value="8"/>
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="NonNegativeAmountType"> <!-- >= 0 (e.g. free delivery) -->
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0"/>
+      <xs:totalDigits value="8"/>
+      <xs:fractionDigits value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RatingType"> <!-- average rating: 0.0 to 5.0 -->
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="5"/>
+      <xs:fractionDigits value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="StarsType"> <!-- one review: 1 to 5 stars -->
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="5"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="QuantityType">
+    <xs:restriction base="xs:positiveInteger"><xs:maxInclusive value="20"/></xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DiscountType"> <!-- percentage -->
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="90"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RadiusKmType">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.5"/>
+      <xs:maxInclusive value="50"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="MinutesType">
+    <xs:restriction base="xs:positiveInteger"><xs:maxInclusive value="180"/></xs:restriction>
+  </xs:simpleType>
+
+  <!-- Enumerations (closed vocabularies) -->
+  <xs:simpleType name="CurrencyType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="EUR"/><xs:enumeration value="USD"/><xs:enumeration value="GBP"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="RestaurantStatusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="open"/>
+      <xs:enumeration value="closed"/>
+      <xs:enumeration value="temporarily_closed"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="CuisineType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Italian"/><xs:enumeration value="Japanese"/>
+      <xs:enumeration value="American"/><xs:enumeration value="Lebanese"/>
+      <xs:enumeration value="Vegan"/><xs:enumeration value="Indian"/>
+      <xs:enumeration value="French"/><xs:enumeration value="Mexican"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AllergenType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="gluten"/><xs:enumeration value="dairy"/>
+      <xs:enumeration value="eggs"/><xs:enumeration value="nuts"/>
+      <xs:enumeration value="peanuts"/><xs:enumeration value="soy"/>
+      <xs:enumeration value="fish"/><xs:enumeration value="shellfish"/>
+      <xs:enumeration value="sesame"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DayNameType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Monday"/><xs:enumeration value="Tuesday"/>
+      <xs:enumeration value="Wednesday"/><xs:enumeration value="Thursday"/>
+      <xs:enumeration value="Friday"/><xs:enumeration value="Saturday"/>
+      <xs:enumeration value="Sunday"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="AddressLabelType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="home"/><xs:enumeration value="work"/><xs:enumeration value="other"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DriverStatusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="available"/><xs:enumeration value="busy"/><xs:enumeration value="offline"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="VehicleKindType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="bicycle"/><xs:enumeration value="scooter"/>
+      <xs:enumeration value="motorbike"/><xs:enumeration value="car"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="OrderStatusType"> <!-- life-cycle of an order -->
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pending"/>
+      <xs:enumeration value="confirmed"/>
+      <xs:enumeration value="preparing"/>
+      <xs:enumeration value="on_the_way"/>
+      <xs:enumeration value="delivered"/>
+      <xs:enumeration value="cancelled"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PaymentMethodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="card"/><xs:enumeration value="cash"/>
+      <xs:enumeration value="paypal"/><xs:enumeration value="wallet"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="PaymentStatusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pending"/><xs:enumeration value="paid"/><xs:enumeration value="refunded"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ====================================================================
+       PART 2 - COMPLEX TYPES
+       ==================================================================== -->
+
+  <!-- An amount of money: <price currency="EUR">9.50</price> (text + attribute) -->
+  <xs:complexType name="PriceElementType">
+    <xs:simpleContent>
+      <xs:extension base="PositiveAmountType">
+        <xs:attribute name="currency" type="CurrencyType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Same idea but zero is allowed (delivery fee, minimum order) -->
+  <xs:complexType name="FeeElementType">
+    <xs:simpleContent>
+      <xs:extension base="NonNegativeAmountType">
+        <xs:attribute name="currency" type="CurrencyType" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="AddressType">
+    <xs:sequence>
+      <xs:element name="street"     type="NameType"/>
+      <xs:element name="city"       type="NameType"/>
+      <xs:element name="postalCode" type="PostalCodeType"/>
+      <xs:element name="country"    type="NameType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="label" type="AddressLabelType" use="optional"/>
+  </xs:complexType>
+
+  <!-- Empty element carrying only attributes: <promotion discountPercent="20" validUntil="2026-12-31"/> -->
+  <xs:complexType name="PromotionType">
+    <xs:attribute name="discountPercent" type="DiscountType" use="required"/>
+    <xs:attribute name="validUntil"      type="xs:date"      use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="AllergensType">
+    <xs:sequence>
+      <xs:element name="allergen" type="AllergenType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DishType">
+    <xs:sequence>
+      <xs:element name="name"        type="NameType"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="price"       type="PriceElementType"/>
+      <xs:element name="promotion"   type="PromotionType" minOccurs="0"/>
+      <xs:element name="calories"    type="xs:nonNegativeInteger" minOccurs="0"/>
+      <xs:element name="allergens"   type="AllergensType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id"         type="DishIdType"  use="required"/>
+    <xs:attribute name="available"  type="xs:boolean"  use="required"/>
+    <xs:attribute name="vegetarian" type="xs:boolean"  use="required"/>
+    <xs:attribute name="spicy"      type="xs:boolean"  use="optional" default="false"/>
+  </xs:complexType>
+
+  <xs:complexType name="CategoryType">
+    <xs:sequence>
+      <xs:element name="dish" type="DishType" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="NameType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="MenuType">
+    <xs:sequence>
+      <xs:element name="category" type="CategoryType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DayType">
+    <xs:attribute name="name"  type="DayNameType"   use="required"/>
+    <xs:attribute name="open"  type="TimeOfDayType" use="required"/>
+    <xs:attribute name="close" type="TimeOfDayType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="OpeningHoursType">
+    <xs:sequence>
+      <xs:element name="day" type="DayType" maxOccurs="7"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RestaurantType">
+    <xs:sequence>
+      <xs:element name="name"             type="NameType"/>
+      <xs:element name="cuisine"          type="CuisineType"/>
+      <xs:element name="address"          type="AddressType"/>
+      <xs:element name="phone"            type="PhoneType"/>
+      <xs:element name="email"            type="EmailType" minOccurs="0"/>
+      <xs:element name="rating"           type="RatingType"/>
+      <xs:element name="deliveryRadiusKm" type="RadiusKmType"/>
+      <xs:element name="minimumOrder"     type="FeeElementType"/>
+      <xs:element name="openingHours"     type="OpeningHoursType"/>
+      <xs:element name="menu"             type="MenuType"/>
+    </xs:sequence>
+    <xs:attribute name="id"     type="RestaurantIdType"     use="required"/>
+    <xs:attribute name="status" type="RestaurantStatusType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="CustomerType">
+    <xs:sequence>
+      <xs:element name="firstName"     type="NameType"/>
+      <xs:element name="lastName"      type="NameType"/>
+      <xs:element name="email"         type="EmailType"/>
+      <xs:element name="phone"         type="PhoneType"/>
+      <xs:element name="address"       type="AddressType" maxOccurs="unbounded"/>
+      <xs:element name="loyaltyPoints" type="xs:nonNegativeInteger"/>
+      <xs:element name="registeredOn"  type="xs:date"/>
+    </xs:sequence>
+    <xs:attribute name="id"     type="CustomerIdType" use="required"/>
+    <xs:attribute name="active" type="xs:boolean"     use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="VehicleType">
+    <xs:sequence>
+      <xs:element name="plate" type="PlateType"/>
+    </xs:sequence>
+    <xs:attribute name="kind" type="VehicleKindType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="DriverType">
+    <xs:sequence>
+      <xs:element name="name"    type="NameType"/>
+      <xs:element name="phone"   type="PhoneType"/>
+      <xs:element name="vehicle" type="VehicleType"/>
+      <xs:element name="rating"  type="RatingType"/>
+    </xs:sequence>
+    <xs:attribute name="id"     type="DriverIdType"     use="required"/>
+    <xs:attribute name="status" type="DriverStatusType" use="required"/>
+  </xs:complexType>
+
+  <!-- One line of an order. dishRef is a FOREIGN KEY to a dish (see PART 4). -->
+  <xs:complexType name="OrderItemType">
+    <xs:sequence>
+      <xs:element name="note" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="dishRef"   type="DishIdType"         use="required"/>
+    <xs:attribute name="quantity"  type="QuantityType"       use="required"/>
+    <xs:attribute name="unitPrice" type="PositiveAmountType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="OrderItemsType">
+    <xs:sequence>
+      <xs:element name="item" type="OrderItemType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DeliveryType">
+    <xs:sequence>
+      <xs:element name="address"          type="AddressType"/>
+      <xs:element name="fee"              type="FeeElementType"/>
+      <xs:element name="estimatedMinutes" type="MinutesType"/>
+      <xs:element name="deliveredAt"      type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PaymentType">
+    <xs:sequence>
+      <xs:element name="amount" type="PriceElementType"/>
+    </xs:sequence>
+    <xs:attribute name="method" type="PaymentMethodType" use="required"/>
+    <xs:attribute name="status" type="PaymentStatusType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ReviewType">
+    <xs:sequence>
+      <xs:element name="comment" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="stars" type="StarsType" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="OrderType">
+    <xs:sequence>
+      <xs:element name="orderDate" type="xs:dateTime"/>
+      <xs:element name="items"     type="OrderItemsType"/>
+      <xs:element name="delivery"  type="DeliveryType"/>
+      <xs:element name="payment"   type="PaymentType"/>
+      <xs:element name="review"    type="ReviewType" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id"            type="OrderIdType"      use="required"/>
+    <xs:attribute name="customerRef"   type="CustomerIdType"   use="required"/>
+    <xs:attribute name="restaurantRef" type="RestaurantIdType" use="required"/>
+    <xs:attribute name="driverRef"     type="DriverIdType"     use="optional"/>
+    <xs:attribute name="status"        type="OrderStatusType"  use="required"/>
+  </xs:complexType>
+
+  <!-- ====================================================================
+       PART 3 - ROOT ELEMENT
+       ==================================================================== -->
+  <xs:element name="foodDelivery">
+    <xs:complexType>
+      <xs:sequence>
+
+        <xs:element name="restaurants">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="restaurant" type="RestaurantType" maxOccurs="unbounded">
+                <!-- Inside ONE restaurant, category names and day names must be unique -->
+                <xs:unique name="categoryNameUnique">
+                  <xs:selector xpath="menu/category"/>
+                  <xs:field xpath="@name"/>
+                </xs:unique>
+                <xs:unique name="dayNameUnique">
+                  <xs:selector xpath="openingHours/day"/>
+                  <xs:field xpath="@name"/>
+                </xs:unique>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="customers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="customer" type="CustomerType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="drivers">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="driver" type="DriverType" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="orders">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="order" type="OrderType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+      <xs:attribute name="version"     type="xs:string" use="optional"/>
+      <xs:attribute name="generatedOn" type="xs:date"   use="optional"/>
+    </xs:complexType>
+
+    <!-- ================================================================
+         PART 4 - IDENTITY CONSTRAINTS  (primary keys and foreign keys)
+         xs:key    = primary key  (must exist, must be unique)
+         xs:keyref = foreign key  (must point to an existing key value)
+         ================================================================ -->
+    <xs:key name="restaurantKey">
+      <xs:selector xpath="restaurants/restaurant"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="dishKey">
+      <xs:selector xpath="restaurants/restaurant/menu/category/dish"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="customerKey">
+      <xs:selector xpath="customers/customer"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="driverKey">
+      <xs:selector xpath="drivers/driver"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+    <xs:key name="orderKey">
+      <xs:selector xpath="orders/order"/>
+      <xs:field xpath="@id"/>
+    </xs:key>
+
+    <xs:keyref name="orderCustomerRef" refer="customerKey">
+      <xs:selector xpath="orders/order"/>
+      <xs:field xpath="@customerRef"/>
+    </xs:keyref>
+    <xs:keyref name="orderRestaurantRef" refer="restaurantKey">
+      <xs:selector xpath="orders/order"/>
+      <xs:field xpath="@restaurantRef"/>
+    </xs:keyref>
+    <xs:keyref name="orderDriverRef" refer="driverKey">
+      <xs:selector xpath="orders/order"/>
+      <xs:field xpath="@driverRef"/>
+    </xs:keyref>
+    <xs:keyref name="itemDishRef" refer="dishKey">
+      <xs:selector xpath="orders/order/items/item"/>
+      <xs:field xpath="@dishRef"/>
+    </xs:keyref>
+  </xs:element>
+
+</xs:schema>

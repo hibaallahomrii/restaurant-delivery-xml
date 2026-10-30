@@ -1,0 +1,64 @@
+
+==============================================================================
+  FEATURE 1 - XML / XSD VALIDATION
+==============================================================================
+XML file : xml/restaurant-delivery.xml
+XSD file : xml/restaurant-delivery.xsd
+
+[OK]   xml/restaurant-delivery.xml  ->  VALID
+
+==============================================================================
+  VALIDATION TEST SUITE - 10 invalid documents (all must be rejected)
+==============================================================================
+
+[REJECTED as expected] invalid-01-missing-required-element.xml
+   defect  : required <name> element missing
+   verdict : INVALID (1 schema error)
+   1st err : line 23, col 16: cvc-complex-type.2.4.a: Invalid content was found starting with element 'cuisine'. One of '{name}' is expected.
+
+[REJECTED as expected] invalid-02-bad-enumeration.xml
+   defect  : order status 'shipped' not allowed
+   verdict : INVALID (2 schema errors)
+   1st err : line 449, col 98: cvc-enumeration-valid: Value 'shipped' is not facet-valid with respect to enumeration '[pending, confirmed, preparing, on_the_way...
+
+[REJECTED as expected] invalid-03-bad-id-pattern.xml
+   defect  : customer id 'CUST-4' breaks the id pattern
+   verdict : INVALID (2 schema errors)
+   1st err : line 386, col 42: cvc-pattern-valid: Value 'CUST-4' is not facet-valid with respect to pattern 'C\d{3}' for type 'CustomerIdType'.
+
+[REJECTED as expected] invalid-04-broken-reference.xml
+   defect  : order references a restaurant R999 that does not exist
+   verdict : INVALID (1 schema error)
+   1st err : line 607, col 16: cvc-identity-constraint.4.3: Key 'orderRestaurantRef' with value 'R999' not found for identity constraint of element 'foodDelivery'.
+
+[REJECTED as expected] invalid-05-duplicate-id.xml
+   defect  : two dishes share the id D017
+   verdict : INVALID (2 schema errors)
+   1st err : line 267, col 76: cvc-identity-constraint.4.2.2: Duplicate key value [D017] declared for identity constraint "dishKey" of element "foodDelivery".
+
+[REJECTED as expected] invalid-06-negative-price.xml
+   defect  : dish with a negative price
+   verdict : INVALID (2 schema errors)
+   1st err : line 74, col 49: cvc-minExclusive-valid: Value '-11.00' is not facet-valid with respect to minExclusive '0.0' for type 'PositiveAmountType'.
+
+[REJECTED as expected] invalid-07-rating-out-of-range.xml
+   defect  : restaurant rating 7.5 (max 5)
+   verdict : INVALID (2 schema errors)
+   1st err : line 103, col 27: cvc-maxInclusive-valid: Value '7.5' is not facet-valid with respect to maxInclusive '5.0' for type 'RatingType'.
+
+[REJECTED as expected] invalid-08-not-well-formed.xml
+   defect  : mismatched end tag </nam> (not well-formed)
+   verdict : NOT WELL-FORMED (fatal syntax error)
+   1st err : line 167, col 30: The element type "name" must be terminated by the matching end-tag "</name>".
+
+[REJECTED as expected] invalid-09-wrong-element-order.xml
+   defect  : <phone> placed before <address>
+   verdict : INVALID (1 schema error)
+   1st err : line 25, col 14: cvc-complex-type.2.4.a: Invalid content was found starting with element 'phone'. One of '{address}' is expected.
+
+[REJECTED as expected] invalid-10-bad-email-and-quantity.xml
+   defect  : bad e-mail + item quantity 0
+   verdict : INVALID (4 schema errors)
+   1st err : line 353, col 44: cvc-pattern-valid: Value 'mohamed.ali.at.example' is not facet-valid with respect to pattern '[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}' for ...
+
+Result: 10 / 10 invalid documents were correctly rejected.
